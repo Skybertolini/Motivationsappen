@@ -1,0 +1,13 @@
+:root { --accent:#007aff; --bg:#f2f2f7; }
+* { box-sizing: border-box; }
+body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; background:var(--bg); }
+.hero { display:flex; justify-content:center; padding:24px 16px; }
+.hero img { max-width: 90%; height:auto; }
+.grid { margin: 0 auto; padding: 0 16px 32px; max-width: 520px;
+        display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+button {
+  background:#fff; border:none; border-radius:20px; padding:20px;
+  font-size:18px; font-weight:600; color:var(--accent);
+  box-shadow:0 2px 6px rgba(0,0,0,.1); transition:transform .08s,box-shadow .2s;
+}
+button:active { transform:scale(.96); box-shadow:0 1px 3px rgba(0,0,0,.2); }
