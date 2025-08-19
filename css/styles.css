@@ -59,3 +59,15 @@ body {
 @media (max-width: 360px) {
   .deck { grid-template-columns: repeat(2, 1fr); }
 }
+html, body {
+  touch-action: manipulation;   /* hindrer pinch/double-tap zoom i mange tilfeller */
+  overscroll-behavior: none;    /* mindre “glide/sprettes” følelse */
+}
+
+/* sørg for at klikkbare elementer ikke triggrer dbl-tap-zoom */
+button, .btn {
+  touch-action: manipulation;
+}
+
+/* Viktig for iOS: tekst < 16px kan trigge zoom. Hold minst 16px. */
+body, button, .btn, .btn .num { font-size: 16px; }
