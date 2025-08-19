@@ -2,20 +2,58 @@
 <html lang="sv">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Motivationsappen</title>
-  <link rel="icon" href="img/favicon.svg" />
+  <link rel="icon" href="img/favicon.png" />
   <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
   <link rel="manifest" href="site.webmanifest" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-  <header class="hero"><img src="img/title.png" alt="Motivationsappen" /></header>
-  <main class="grid">
-    <button onclick="playSound('sounds/1.mp3')">1</button>
-    <!-- … opp til 12 -->
-    <button onclick="playSound('sounds/12.mp3')">12</button>
+  <header class="hero">
+    <img class="title-card" src="img/title.png" alt="Motivationsappen" />
+  </header>
+
+  <main class="deck">
+    <!-- 12 “kassettknapper” – hver spiller sin lyd -->
+    <button class="btn" data-file="sounds/1.mp3" aria-label="Knepp 1">
+      <span class="icon">▶</span><span class="lbl">Play</span>
+    </button>
+    <button class="btn" data-file="sounds/2.mp3" aria-label="Knepp 2">
+      <span class="icon">⏸</span><span class="lbl">Pause</span>
+    </button>
+    <button class="btn" data-file="sounds/3.mp3" aria-label="Knepp 3">
+      <span class="icon">■</span><span class="lbl">Stop</span>
+    </button>
+    <button class="btn" data-file="sounds/4.mp3" aria-label="Knepp 4">
+      <span class="icon">⏪</span><span class="lbl">Rew</span>
+    </button>
+    <button class="btn" data-file="sounds/5.mp3" aria-label="Knepp 5">
+      <span class="icon">⏩</span><span class="lbl">FF</span>
+    </button>
+    <button class="btn" data-file="sounds/6.mp3" aria-label="Knepp 6">
+      <span class="icon">⏺</span><span class="lbl">Rec</span>
+    </button>
+    <button class="btn" data-file="sounds/7.mp3" aria-label="Knepp 7">
+      <span class="icon">⏮</span><span class="lbl">Prev</span>
+    </button>
+    <button class="btn" data-file="sounds/8.mp3" aria-label="Knepp 8">
+      <span class="icon">⏭</span><span class="lbl">Next</span>
+    </button>
+    <button class="btn" data-file="sounds/9.mp3" aria-label="Knepp 9">
+      <span class="icon">⏏</span><span class="lbl">Eject</span>
+    </button>
+    <button class="btn" data-file="sounds/10.mp3" aria-label="Knepp 10">
+      <span class="icon">🔁</span><span class="lbl">Loop</span>
+    </button>
+    <button class="btn" data-file="sounds/11.mp3" aria-label="Knepp 11">
+      <span class="icon">🔇</span><span class="lbl">Mute</span>
+    </button>
+    <button class="btn" data-file="sounds/12.mp3" aria-label="Knepp 12">
+      <span class="icon">★</span><span class="lbl">Star</span>
+    </button>
   </main>
+
   <script src="js/app.js"></script>
 </body>
 </html>
