@@ -19,13 +19,17 @@ for (let i = 1; i <= 15; i++) {
 
 // --- Håndtere aktiv knapp (bytter til btnNactive.png) ---
 let currentBtn = null;
+let currentAudio = null;
 
 function setActive(btn) {
+  // Sett forrige knapp tilbake til normal
   if (currentBtn && currentBtn !== btn) {
     const prevImg = currentBtn.querySelector('img');
     const prevNum = currentBtn.getAttribute('aria-label');
     prevImg.src = `img/btn${prevNum}.png`;
   }
+
+  // Sett ny knapp aktiv
   if (btn) {
     const img = btn.querySelector('img');
     const num = btn.getAttribute('aria-label');
@@ -38,10 +42,31 @@ function setActive(btn) {
 function play(file, btn) {
   const a = clips[file];
   if (!a) return console.error('Fant ikke lydfilen:', file);
+
   try {
+    // Stopp evt. lyd som allerede spiller
+    if (currentAudio && !currentAudio.paused) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+    }
+
+    // Start ny lyd
+    currentAudio = a;
     a.currentTime = 0;
     a.play().catch(err => console.error('play() feilet:', err));
+
     setActive(btn);
+
+    // Når lyden stopper, sett knappen tilbake
+    a.onended = () => {
+      if (currentBtn) {
+        const img = currentBtn.querySelector('img');
+        const num = currentBtn.getAttribute('aria-label');
+        img.src = `img/btn${num}.png`;
+        currentBtn = null;
+      }
+      currentAudio = null;
+    };
   } catch (err) {
     console.error('Avspilling feilet:', err);
   }
@@ -65,4 +90,4 @@ document.addEventListener('keydown', e => {
   play(file, btn);
 });
 
-console.log('[INIT] Motivationsappen lastet (15 knapper)');
+console.log('[INIT] Motivationsappen lastet (15 knapper, én lyd om gangen)');
