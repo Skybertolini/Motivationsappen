@@ -35,6 +35,30 @@ const items = [];
 for (let i = 1; i <= COUNT; i++) {
   const wrap = document.createElement('div');
   wrap.className = 'wheel-item';
+
+  const img = document.createElement('img');
+  img.alt = String(i);
+  img.src = `img/btn${i}.png`;
+  wrap.appendChild(img);
+
+  // jevn fordeling rundt ringen (0° = topp)
+  const angle = (360 / COUNT) * (i - 1);
+
+  // Ny, responsiv plassering:
+  // 1) roter til vinkel
+  // 2) flytt ut fra senter med CSS-variabelen --radius
+  // 3) roter tilbake så bildet står rett opp
+  wrap.style.transform =
+    `rotate(${angle}deg) translate(0, calc(var(--radius) * -1)) rotate(${-angle}deg)`;
+
+  items.push({ i, angle, wrap, img });
+  wheel.appendChild(wrap);
+}
+
+
+for (let i = 1; i <= COUNT; i++) {
+  const wrap = document.createElement('div');
+  wrap.className = 'wheel-item';
   const img = document.createElement('img');
   img.alt = `${i}`;
   img.src = `img/btn${i}.png`;
