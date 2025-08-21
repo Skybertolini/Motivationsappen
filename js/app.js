@@ -9,10 +9,10 @@ document.addEventListener('touchend', e => {
 }, { passive: false });
 
 // ====== Konfig ======
-const COUNT = 15;             // antall spor
-const NO_REPEAT_WINDOW = 10;  // ikke gjenta nylig
-const EXTRA_SPINS = 4;        // fulle runder
-const SPIN_DURATION = 4000;   // 4 sekunder
+const COUNT = 16;                                  // antall spor (nå 16)
+const NO_REPEAT_WINDOW = Math.min(12, COUNT - 1);  // unngå nylig gjentakelse
+const EXTRA_SPINS = 4;                             
+const SPIN_DURATION = 4000;                        // 4 sekunder
 
 // ====== Lyd-preload ======
 const clips = {};
@@ -22,8 +22,6 @@ for (let i = 1; i <= COUNT; i++) {
   a.preload = 'auto';
   clips[i] = a;
 }
-
-// Tick-lyd
 const tick = new Audio('sounds/tick.mp3');
 tick.preload = 'auto';
 
@@ -41,31 +39,11 @@ for (let i = 1; i <= COUNT; i++) {
   img.src = `img/btn${i}.png`;
   wrap.appendChild(img);
 
-  // jevn fordeling rundt ringen (0° = topp)
-  const angle = (360 / COUNT) * (i - 1);
-
-  // Ny, responsiv plassering:
-  // 1) roter til vinkel
-  // 2) flytt ut fra senter med CSS-variabelen --radius
-  // 3) roter tilbake så bildet står rett opp
+  const angle = (360 / COUNT) * (i - 1); // 0° = topp
+  // Responsiv plassering: roter -> flytt ut fra senter med --radius -> roter tilbake
   wrap.style.transform =
     `rotate(${angle}deg) translate(0, calc(var(--radius) * -1)) rotate(${-angle}deg)`;
 
-  items.push({ i, angle, wrap, img });
-  wheel.appendChild(wrap);
-}
-
-
-for (let i = 1; i <= COUNT; i++) {
-  const wrap = document.createElement('div');
-  wrap.className = 'wheel-item';
-  const img = document.createElement('img');
-  img.alt = `${i}`;
-  img.src = `img/btn${i}.png`;
-  wrap.appendChild(img);
-
-  const angle = (360 / COUNT) * (i - 1);
-  wrap.style.transform = `rotate(${angle}deg) translateY(-330px)`;
   items.push({ i, angle, wrap, img });
   wheel.appendChild(wrap);
 }
@@ -77,15 +55,12 @@ const history = [];
 
 function pickIndex() {
   const recent = new Set(history);
-  const candidates = [];
-  for (let n = 1; n <= COUNT; n++) {
-    if (!recent.has(n)) candidates.push(n);
-  }
+  let candidates = [];
+  for (let n = 1; n <= COUNT; n++) if (!recent.has(n)) candidates.push(n);
   while (candidates.length === 0 && history.length) {
-    history.shift();
-    for (let n = 1; n <= COUNT; n++) {
-      if (!history.includes(n)) candidates.push(n);
-    }
+    history.shift(); // slipp eldste ut av vinduet
+    candidates = [];
+    for (let n = 1; n <= COUNT; n++) if (!history.includes(n)) candidates.push(n);
   }
   const idx = candidates[Math.floor(Math.random() * candidates.length)];
   history.push(idx);
@@ -93,12 +68,11 @@ function pickIndex() {
   return idx;
 }
 
-function angleForIndex(n) {
-  return (360 / COUNT) * (n - 1);
-}
+function angleForIndex(n) { return (360 / COUNT) * (n - 1); }
 
 function spinToIndex(n) {
   const targetAngle = angleForIndex(n);
+  // roter slik at feltet lander ved pekeren (toppen)
   const targetRotation = -(targetAngle) + 360 * EXTRA_SPINS;
   currentRotation += targetRotation;
   wheel.style.transition = `transform ${SPIN_DURATION}ms cubic-bezier(.12,.9,.39,1)`;
@@ -121,10 +95,10 @@ function playIndex(n) {
   if (!a) return;
   currentAudio = a;
   a.currentTime = 0;
-  a.play().catch(err => console.error('play() feilet:', err));
+  a.play().catch(()=>{});
 }
 
-// ====== Tick under spinn ======
+// Tick under spinn
 let tickInterval = null;
 function startTicks() {
   stopTicks();
@@ -134,10 +108,7 @@ function startTicks() {
   }, 120);
 }
 function stopTicks() {
-  if (tickInterval) {
-    clearInterval(tickInterval);
-    tickInterval = null;
-  }
+  if (tickInterval) { clearInterval(tickInterval); tickInterval = null; }
 }
 
 // ====== Interaksjon ======
@@ -146,11 +117,16 @@ document.getElementById('btnselector').addEventListener('click', () => {
   setActiveVisual(n);
   spinToIndex(n);
   startTicks();
-
-  setTimeout(() => {
-    stopTicks();
-    playIndex(n);
-  }, SPIN_DURATION);
+  setTimeout(() => { stopTicks(); playIndex(n); }, SPIN_DURATION);
 });
 
-console.log('[INIT] Lykkehjul klart (4 sek, tick-lyd)');
+// Tilgjengelighet: Enter/Space
+document.addEventListener('keydown', e => {
+  if (!['Enter', ' '].includes(e.key)) return;
+  const btn = document.activeElement?.closest?.('#btnselector');
+  if (!btn) return;
+  e.preventDefault();
+  document.getElementById('btnselector').click();
+});
+
+console.log('[INIT] Lykkehjul klart (COUNT=16)');
