@@ -9,11 +9,12 @@ document.addEventListener('touchend', e => {
 }, { passive: false });
 
 // ====== Konfig ======
-const COUNT_TOTAL = 18;      // 1..18 knapper
-const SOUND_MAX   = 17;      // 1..17 har lyd; #18 = randomizer
-const NO_REPEAT_WINDOW = Math.min(10, SOUND_MAX - 1); // unngå nylig gjentakelse
-const RANDOM_FLASHES   = 5;  // antall blink før sluttvalg
+const COUNT_TOTAL = 18;      // 1..17 vanlige + random
+const SOUND_MAX   = 17;      // 1..17 har lyd
+const NO_REPEAT_WINDOW = Math.min(10, SOUND_MAX - 1);
+const RANDOM_FLASHES   = 5;   // antall blink
 const FLASH_INTERVAL   = 160; // ms mellom blink
+const RANDOM_ACTIVE_MS = 3000; // hvor lenge random-knappen selv lyser
 
 // ====== Preload lyd ======
 const clips = {};
@@ -24,30 +25,29 @@ for (let i = 1; i <= SOUND_MAX; i++) {
   clips[i] = a;
 }
 
+// Shuffle-lyd for random-knappen
+const shuffleSound = new Audio('sounds/shuffle.mp3');
+shuffleSound.preload = 'auto';
+
 // ====== State ======
 let currentAudio = null;
-let activeIndex  = null;       // hvilket nummer (1..17) som er aktivt nå
-const history = [];            // nylige valg for anti-gjentakelse
+let activeIndex  = null;       // 1..17 aktiv
+const history = [];
 
 // ====== DOM helpers ======
 const deck = document.querySelector('.deck');
 
-function btnFor(i) {
-  return deck.querySelector(`.btn[data-index="${i}"]`);
-}
-function imgFor(i) {
-  return btnFor(i)?.querySelector('img');
-}
+function btnFor(i) { return deck.querySelector(`.btn[data-index="${i}"]`); }
+function imgFor(i) { return btnFor(i)?.querySelector('img'); }
+function randomBtn() { return deck.querySelector('.btn[data-randomizer]'); }
+function randomImg() { return randomBtn()?.querySelector('img'); }
 
-// Sett bilde og .active-klasse
 function setActiveVisual(n) {
-  // nullstill forrige
   if (activeIndex && activeIndex !== n) {
     const prevImg = imgFor(activeIndex);
     if (prevImg) prevImg.src = `img/btn${activeIndex}.png`;
     btnFor(activeIndex)?.classList.remove('active');
   }
-  // sett ny
   const img = imgFor(n);
   if (img) img.src = `img/btn${n}active.png`;
   btnFor(n)?.classList.add('active');
@@ -69,10 +69,7 @@ function playIndex(n) {
     currentAudio.currentTime = 0;
   }
   const a = clips[n];
-  if (!a) {
-    console.error('Mangler lyd for', n);
-    return;
-  }
+  if (!a) return;
   currentAudio = a;
   a.currentTime = 0;
   a.play().catch(()=>{});
@@ -84,7 +81,7 @@ function pickIndexNoRepeat() {
   let candidates = [];
   for (let n = 1; n <= SOUND_MAX; n++) if (!recent.has(n)) candidates.push(n);
   while (candidates.length === 0 && history.length) {
-    history.shift(); // slipp eldste ut
+    history.shift();
     candidates = [];
     for (let n = 1; n <= SOUND_MAX; n++) if (!history.includes(n)) candidates.push(n);
   }
@@ -94,32 +91,42 @@ function pickIndexNoRepeat() {
   return idx;
 }
 
-// Blink 5 tilfeldige (kan repetere), så sluttvalg uten gjentakelse
+// Blink 5 tilfeldige, så sluttvalg
 async function runRandomizer() {
-  // stopp evt. lyd og visuell state
+  // stopp evt. lyd
   if (currentAudio && !currentAudio.paused) {
     currentAudio.pause();
     currentAudio.currentTime = 0;
   }
   clearActiveVisual();
 
-  // 5 raske blink på tilfeldige knapper (1..17)
+  // vis random-knappen som aktiv i 3 sek
+  const rImg = randomImg();
+  if (rImg) {
+    rImg.src = `img/btnrandomactive.png`;
+    setTimeout(() => {
+      rImg.src = `img/btnrandom.png`;
+    }, RANDOM_ACTIVE_MS);
+  }
+
+  // spill shuffle-lyd
+  shuffleSound.currentTime = 0;
+  shuffleSound.play().catch(()=>{});
+
+  // blink 5 tilfeldige
   for (let i = 0; i < RANDOM_FLASHES; i++) {
     const r = 1 + Math.floor(Math.random() * SOUND_MAX);
-    // midlertidig vis active-bilde
     const img = imgFor(r);
     if (img) {
-      const prevSrc = img.src;
       img.src = `img/btn${r}active.png`;
       setTimeout(() => {
-        // hvis sluttvalget senere ble samme r, vil setActiveVisual holde den aktiv
         if (activeIndex !== r) img.src = `img/btn${r}.png`;
       }, FLASH_INTERVAL - 20);
     }
     await new Promise(res => setTimeout(res, FLASH_INTERVAL));
   }
 
-  // Sluttvalg uten nylig gjentakelse
+  // sluttvalg
   const final = pickIndexNoRepeat();
   setActiveVisual(final);
   playIndex(final);
@@ -131,19 +138,18 @@ deck.addEventListener('pointerdown', e => {
   if (!btn) return;
   const idx = Number(btn.getAttribute('data-index'));
 
-  // Randomizer (#18)
+  // Randomizer
   if (btn.hasAttribute('data-randomizer')) {
     runRandomizer();
     return;
   }
 
-  // Vanlig knapp (1..17)
-  const fileIdx = idx; // data-file finnes, men vi bruker tallet direkte
-  setActiveVisual(fileIdx);
-  playIndex(fileIdx);
+  // Vanlig knapp
+  setActiveVisual(idx);
+  playIndex(idx);
 });
 
-// Tastatur (Enter/Space på fokusert knapp)
+// Tastatur
 document.addEventListener('keydown', e => {
   if (!['Enter', ' '].includes(e.key)) return;
   const btn = document.activeElement?.closest?.('.btn');
@@ -152,4 +158,4 @@ document.addEventListener('keydown', e => {
   btn.dispatchEvent(new PointerEvent('pointerdown', {bubbles:true}));
 });
 
-console.log('[INIT] Grid-UI aktiv (18 knapper, #18 randomizer)');
+console.log('[INIT] Grid-UI aktiv (18 knapper, btnrandom med shuffle-lyd og 3s glow)');
