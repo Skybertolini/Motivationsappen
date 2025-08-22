@@ -24,6 +24,10 @@ for (let i = 1; i <= SOUND_MAX; i++) {
   clips[i] = a;
 }
 
+// Shuffle-lyd for knapp 18
+const shuffleSound = new Audio('sounds/shuffle.mp3');
+shuffleSound.preload = 'auto';
+
 // ====== State ======
 let currentAudio = null;
 let activeIndex  = null;       // hvilket nummer (1..17) som er aktivt nå
@@ -94,7 +98,7 @@ function pickIndexNoRepeat() {
   return idx;
 }
 
-// Blink 5 tilfeldige (kan repetere), så sluttvalg uten gjentakelse
+// Blink 5 tilfeldige, så sluttvalg
 async function runRandomizer() {
   // stopp evt. lyd og visuell state
   if (currentAudio && !currentAudio.paused) {
@@ -103,16 +107,18 @@ async function runRandomizer() {
   }
   clearActiveVisual();
 
+  // spill shuffle-lyd først
+  shuffleSound.currentTime = 0;
+  shuffleSound.play().catch(()=>{});
+
   // 5 raske blink på tilfeldige knapper (1..17)
   for (let i = 0; i < RANDOM_FLASHES; i++) {
     const r = 1 + Math.floor(Math.random() * SOUND_MAX);
-    // midlertidig vis active-bilde
     const img = imgFor(r);
     if (img) {
       const prevSrc = img.src;
       img.src = `img/btn${r}active.png`;
       setTimeout(() => {
-        // hvis sluttvalget senere ble samme r, vil setActiveVisual holde den aktiv
         if (activeIndex !== r) img.src = `img/btn${r}.png`;
       }, FLASH_INTERVAL - 20);
     }
@@ -138,9 +144,8 @@ deck.addEventListener('pointerdown', e => {
   }
 
   // Vanlig knapp (1..17)
-  const fileIdx = idx; // data-file finnes, men vi bruker tallet direkte
-  setActiveVisual(fileIdx);
-  playIndex(fileIdx);
+  setActiveVisual(idx);
+  playIndex(idx);
 });
 
 // Tastatur (Enter/Space på fokusert knapp)
@@ -152,4 +157,4 @@ document.addEventListener('keydown', e => {
   btn.dispatchEvent(new PointerEvent('pointerdown', {bubbles:true}));
 });
 
-console.log('[INIT] Grid-UI aktiv (18 knapper, #18 randomizer)');
+console.log('[INIT] Grid-UI aktiv (18 knapper, #18 randomizer med shuffle-lyd)');
