@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-  <meta name="theme-color" content="#007aff">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta charset="UTF-8" />
   <meta name="viewport"
         content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
@@ -15,32 +12,47 @@
   <link rel="manifest" href="site.webmanifest" />
 
   <!-- Stil -->
-  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/styles.css?v=9" />
 </head>
 <body>
   <header class="hero">
     <img class="title-card" src="img/title.png" alt="Motivationsappen" />
   </header>
 
-  <!-- LYKKEHJUL -->
-  <section class="wheel-viewport" aria-label="Lykkhjul">
-    <!-- peker på toppen -->
-    <div class="pointer"></div>
+  <main class="deck" aria-label="Motivationsappen-knapper">
+    <!-- 1..17 spiller lyd. 18 er RANDOMIZER -->
+    <!-- Hver knapp har data-index=N og <img src="img/btnN.png"> -->
+    <!-- Rader/kolonner styres av CSS-grid -->
+    <!-- Rad 1 -->
+    <button class="btn" data-index="1"  data-file="sounds/1.mp3"  aria-label="1"><img src="img/btn1.png"  alt="1"></button>
+    <button class="btn" data-index="2"  data-file="sounds/2.mp3"  aria-label="2"><img src="img/btn2.png"  alt="2"></button>
+    <button class="btn" data-index="3"  data-file="sounds/3.mp3"  aria-label="3"><img src="img/btn3.png"  alt="3"></button>
+    <!-- Rad 2 -->
+    <button class="btn" data-index="4"  data-file="sounds/4.mp3"  aria-label="4"><img src="img/btn4.png"  alt="4"></button>
+    <button class="btn" data-index="5"  data-file="sounds/5.mp3"  aria-label="5"><img src="img/btn5.png"  alt="5"></button>
+    <button class="btn" data-index="6"  data-file="sounds/6.mp3"  aria-label="6"><img src="img/btn6.png"  alt="6"></button>
+    <!-- Rad 3 -->
+    <button class="btn" data-index="7"  data-file="sounds/7.mp3"  aria-label="7"><img src="img/btn7.png"  alt="7"></button>
+    <button class="btn" data-index="8"  data-file="sounds/8.mp3"  aria-label="8"><img src="img/btn8.png"  alt="8"></button>
+    <button class="btn" data-index="9"  data-file="sounds/9.mp3"  aria-label="9"><img src="img/btn9.png"  alt="9"></button>
+    <!-- Rad 4 -->
+    <button class="btn" data-index="10" data-file="sounds/10.mp3" aria-label="10"><img src="img/btn10.png" alt="10"></button>
+    <button class="btn" data-index="11" data-file="sounds/11.mp3" aria-label="11"><img src="img/btn11.png" alt="11"></button>
+    <button class="btn" data-index="12" data-file="sounds/12.mp3" aria-label="12"><img src="img/btn12.png" alt="12"></button>
+    <!-- Rad 5 -->
+    <button class="btn" data-index="13" data-file="sounds/13.mp3" aria-label="13"><img src="img/btn13.png" alt="13"></button>
+    <button class="btn" data-index="14" data-file="sounds/14.mp3" aria-label="14"><img src="img/btn14.png" alt="14"></button>
+    <button class="btn" data-index="15" data-file="sounds/15.mp3" aria-label="15"><img src="img/btn15.png" alt="15"></button>
+    <!-- Rad 6 -->
+    <button class="btn" data-index="16" data-file="sounds/16.mp3" aria-label="16"><img src="img/btn16.png" alt="16"></button>
+    <button class="btn" data-index="17" data-file="sounds/17.mp3" aria-label="17"><img src="img/btn17.png" alt="17"></button>
 
-    <!-- stort hjul -->
-    <div id="wheel" class="wheel" aria-hidden="true"></div>
+    <!-- #18 = RANDOMIZER (triggere 5 blink + sluttvalg) -->
+    <button class="btn" data-index="18" data-randomizer="true" aria-label="Random">
+      <img src="img/btn18.png" alt="Random">
+    </button>
+  </main>
 
-    <!-- midt-knapp -->
-<button id="btnselector" class="selector" aria-label="Snurra hjulet">
-  <img src="img/spin.png" alt="Starta hjulet" />
-</button>
-
-  <!-- valgt spor -->
-  <div class="now-playing" aria-live="polite">
-    Valgt: <span id="chosen">–</span>
-  </div>
-
-  <!-- JavaScript -->
-  <script src="js/app.js"></script>
+  <script src="js/app.js?v=9"></script>
 </body>
 </html>
