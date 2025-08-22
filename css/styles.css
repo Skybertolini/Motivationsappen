@@ -62,3 +62,16 @@ body {
 @media (max-width: 380px) {
   .btn img { max-width: 140px; }
 }
+/* ====== Footer ====== */
+.footer {
+  text-align: center;
+  padding: 12px;
+  font-size: 14px;
+  color: #666;
+  background: #f9f9fb;
+  border-top: 1px solid #ddd;
+}
+.footer p {
+  margin: 0;
+  line-height: 1.4;
+}
